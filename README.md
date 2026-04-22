@@ -6,6 +6,8 @@
 
 **Пошаговая установка**, проверка из терминала, `mcp.json`, типичные ошибки — **[`documentation/`](documentation/README.md)**.
 
+**В Cursor в этом репозитории** можно написать ассистенту: **«установи mcp»** (или «настрой 1c-platform») — по проектному правилу он запустит **`scripts/install-mcp.ps1`** (Windows) или **`scripts/install-mcp.sh`** (Linux/macOS): сам найдёт Java, JAR и каталог платформы 1С и создаст **`.cursor/mcp.json`**, затем нужен **Reload Window**.
+
 Ниже — краткий обзор и быстрый старт.
 
 ### Что делает MCP‑сервер `1c-platform` (после настройки)
@@ -29,6 +31,7 @@
 | [`documentation/CLI.md`](documentation/CLI.md) | Опции JAR, лог, кратко про инструменты MCP. |
 | [`documentation/TROUBLESHOOTING.md`](documentation/TROUBLESHOOTING.md) | Типичные сбои и исправления. |
 | [`documentation/SOURCE.md`](documentation/SOURCE.md) | Сборка JAR из корня репозитория (Gradle). |
+| [`scripts/install-mcp.ps1`](scripts/install-mcp.ps1), [`scripts/install-mcp.sh`](scripts/install-mcp.sh) | Автоустановка **`.cursor/mcp.json`**: поиск Java, JAR (`dist/` или GitHub Release), `--platform-path` (типичные каталоги 1С). |
 | [`.cursor/mcp.json.example`](.cursor/mcp.json.example) | Шаблон `mcp.json`: сервер `1c-platform`, `java`, JAR, `--platform-path`. |
 | [`.cursor/rules/use-1c-platform-mcp.mdc`](.cursor/rules/use-1c-platform-mcp.mdc) | Правило Cursor: когда вызывать MCP и **точные имена** инструментов. |
 | [`README.md`](README.md) | Краткий обзор и быстрый старт. |
