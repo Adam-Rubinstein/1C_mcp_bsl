@@ -4,12 +4,20 @@
 
 ## 0. Самое быстрое (авто)
 
-Из **корня клона** репозитория:
+**В Cursor** можно написать ассистенту: **«установи mcp»** и при необходимости **URL репозитория** (по умолчанию **`https://github.com/Adam-Rubinstein/1C_mcp_bsl`**). Агент подставит корень вашего workspace и запустит скрипт (см. **`.cursor/rules/use-1c-platform-mcp.mdc`**).
+
+Из **терминала**, в **корне клона** этого репозитория:
 
 - **Windows:** `powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-mcp.ps1`
-- **Linux / macOS:** `bash scripts/install-mcp.sh` (нужны `curl`, `python3`; 1С — типичный путь `/opt/1cv8/x86_64/8.3.*` или `aarch64`)
+- **Linux / macOS:** `bash scripts/install-mcp.sh` (нужны `curl`, `python3`; 1С — типичный путь `/opt/1cv8/...`)
 
-Скрипт создаёт **`.cursor/mcp.json`**. Дальше в Cursor: **Reload Window**. В чате с ассистентом вместо команд можно сказать **«установи mcp»** — он выполнит тот же сценарий (см. правило **`.cursor/rules/use-1c-platform-mcp.mdc`**). Если автообнаружение не подошло к вашей установке 1С — разделы ниже и ручное заполнение по **`mcp.json.example`**.
+В **другом проекте** (где нет клона) на **Windows** (нужны `git` и сеть), подставив абсолютный путь к корню проекта вместо `WS`:
+
+```powershell
+$f = Join-Path $env:TEMP "install-mcp-1c.ps1"; irm "https://raw.githubusercontent.com/Adam-Rubinstein/1C_mcp_bsl/main/scripts/install-mcp.ps1" -OutFile $f; powershell -NoProfile -ExecutionPolicy Bypass -File $f -GitHubUrl "https://github.com/Adam-Rubinstein/1C_mcp_bsl" -WorkspaceRoot "WS"
+```
+
+Скрипт создаёт **`.cursor/mcp.json`**, копирует **`use-1c-platform-mcp.mdc`** и **`mcp.json.example`**. Дальше: **Reload Window**. Если автообнаружение 1С не сработало — разделы ниже и ручное заполнение по **`mcp.json.example`**.
 
 ## 1. Требования
 

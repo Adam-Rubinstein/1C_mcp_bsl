@@ -6,7 +6,12 @@
 
 **Пошаговая установка**, проверка из терминала, `mcp.json`, типичные ошибки — **[`documentation/`](documentation/README.md)**.
 
-**В Cursor в этом репозитории** можно написать ассистенту: **«установи mcp»** (или «настрой 1c-platform») — по проектному правилу он запустит **`scripts/install-mcp.ps1`** (Windows) или **`scripts/install-mcp.sh`** (Linux/macOS): сам найдёт Java, JAR и каталог платформы 1С и создаст **`.cursor/mcp.json`**, затем нужен **Reload Window**.
+**В Cursor** достаточно написать: **«установи mcp»** и при желании **ссылку на репозиторий** (по умолчанию **`https://github.com/Adam-Rubinstein/1C_mcp_bsl`**).
+
+- В **этом** репозитории срабатывает проектное правило **`.cursor/rules/use-1c-platform-mcp.mdc`**: агент запускает скрипт или однострочник с **raw.githubusercontent.com** и подставляет корень workspace как **`-WorkspaceRoot`**.
+- В **любом другом** проекте **один раз** добавьте в **Cursor → Settings → Rules** текст из **[`documentation/cursor-user-rule-snippet.txt`](documentation/cursor-user-rule-snippet.txt)** — после этого та же фраза и ссылка работают без файлов из репо в проекте. После первой установки в проект копируется **`use-1c-platform-mcp.mdc`**, можно обойтись без глобального правила.
+
+После успеха: **Reload Window**.
 
 Ниже — краткий обзор и быстрый старт.
 
@@ -28,6 +33,7 @@
 |------|------------|
 | [`documentation/README.md`](documentation/README.md) | Оглавление подробной документации. |
 | [`documentation/INSTALL.md`](documentation/INSTALL.md) | Установка: требования, JAR, терминал, Cursor, пути. |
+| [`documentation/cursor-user-rule-snippet.txt`](documentation/cursor-user-rule-snippet.txt) | Текст для **Cursor → Rules** — «установи mcp» в любом проекте без локального `.cursor/rules`. |
 | [`documentation/CLI.md`](documentation/CLI.md) | Опции JAR, лог, кратко про инструменты MCP. |
 | [`documentation/TROUBLESHOOTING.md`](documentation/TROUBLESHOOTING.md) | Типичные сбои и исправления. |
 | [`documentation/SOURCE.md`](documentation/SOURCE.md) | Сборка JAR из корня репозитория (Gradle). |

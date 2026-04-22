@@ -3,6 +3,7 @@
 | Документ | Содержание |
 |----------|------------|
 | [INSTALL.md](INSTALL.md) | Требования, откуда взять JAR, проверка из терминала, подключение в Cursor. |
+| [cursor-user-rule-snippet.txt](cursor-user-rule-snippet.txt) | Одна вставка в **Cursor → Rules**, чтобы «установи mcp» работало в любом проекте. |
 | [CLI.md](CLI.md) | Опции командной строки JAR, лог, кратко про инструменты и сборку. |
 | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Типичные ошибки (PATH, PowerShell, путь к платформе). |
 | [SOURCE.md](SOURCE.md) | Исходники сервера в корне репозитория (`src/`), сборка Gradle, обновление `dist/`. |
