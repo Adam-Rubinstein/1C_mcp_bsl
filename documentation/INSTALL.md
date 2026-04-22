@@ -15,10 +15,11 @@
 ## 2. Откуда взять JAR
 
 1. **Из репозитория (клон или ZIP с GitHub)** — файл **`dist/1C_mcp_bsl.jar`** уже лежит в дереве проекта; скопируйте его в удобный каталог (см. ниже).
-2. **Сборка у себя** — из **корня** репозитория: `.\gradlew.bat bootJar` (Windows) или `./gradlew bootJar` (Linux/macOS); результат — **`build/libs/1C_mcp_bsl.jar`** (см. [SOURCE.md](SOURCE.md)).
-3. **Уже лежит на ПК** — укажите полный путь в `mcp.json`.
+2. **[С GitHub Releases](https://github.com/Adam-Rubinstein/1C_mcp_bsl/releases)** — скачайте вложение **`1C_mcp_bsl.jar`** у нужного тега (например **[v1.0.0](https://github.com/Adam-Rubinstein/1C_mcp_bsl/releases/tag/v1.0.0)**), если не хотите клонировать репозиторий.
+3. **Сборка у себя** — из **корня** репозитория: `.\gradlew.bat bootJar` (Windows) или `./gradlew bootJar` (Linux/macOS); результат — **`build/libs/1C_mcp_bsl.jar`** (см. [SOURCE.md](SOURCE.md)).
+4. **Уже лежит на ПК** — укажите полный путь в `mcp.json`.
 
-**Про раздел Releases на GitHub:** у проекта **может не быть** ни одного релиза — это нормально. JAR для работы берите из **`dist/`** или из сборки. Отдельный **GitHub Release** с вложением появится **только если** в репозитории включены **Actions** и кто-то запушит тег вида **`v*.*.*`** (workflow **`release-jar.yml`**); до этого страница Releases будет пустой.
+**Про Releases:** новые версии в разделе **Releases** появляются, когда в репозитории включены **GitHub Actions** и запушен тег вида **`v*.*.*`** (workflow **`release-jar.yml`** собирает JAR и прикрепляет к релизу). Если Actions выключены, JAR по-прежнему можно взять из **`dist/`** или собрать локально.
 
 Положите файл в каталог **без кириллицы** в пути, например:
 

@@ -16,7 +16,7 @@
 - по запросам ассистента отвечает инструментами **`search`**, **`info`**, **`getMember`**, **`getMembers`**, **`getConstructors`** — поиск и описания встроенных функций, методов, свойств, типов и конструкторов;
 - **не выполняет** прикладной код и **не меняет** конфигурацию — только помогает **писать и проверять BSL** по справке выбранной версии платформы.
 
-Бинарник **`dist/1C_mcp_bsl.jar`** лежит **в самом репозитории** (после клона или скачивания архива с GitHub). Сборка **`./gradlew bootJar`** даёт **`build/libs/1C_mcp_bsl.jar`**. Установка 1С по-прежнему **отдельно** на машине. Раздел **Releases** на GitHub **может быть пустым** — на работу MCP это не влияет; см. ниже про опциональный релиз по тегу.
+Бинарник **`dist/1C_mcp_bsl.jar`** лежит **в самом репозитории** (после клона или скачивания архива с GitHub). Сборка **`./gradlew bootJar`** даёт **`build/libs/1C_mcp_bsl.jar`**. Установка 1С по-прежнему **отдельно** на машине. Тот же JAR публикуется в **[Releases на GitHub](https://github.com/Adam-Rubinstein/1C_mcp_bsl/releases)** (например **[v1.0.0](https://github.com/Adam-Rubinstein/1C_mcp_bsl/releases/tag/v1.0.0)** — вложение **`1C_mcp_bsl.jar`**); без клона репозитория удобно скачать оттуда.
 
 ---
 
@@ -36,7 +36,7 @@
 | [`.gitignore`](.gitignore) | Локальный `.cursor/mcp.json`, каталоги ERP и прочие правила Cursor. |
 | [`dist/1C_mcp_bsl.jar`](dist/1C_mcp_bsl.jar) | Готовый JAR в **`dist/`** (основной способ взять файл). Сборка: `.\gradlew.bat bootJar` → **`build/libs/1C_mcp_bsl.jar`**. |
 | [`src/`](src/), [`build.gradle.kts`](build.gradle.kts), [`gradlew.bat`](gradlew.bat) | **Исходники** MCP‑сервера (Kotlin, Gradle) в корне — правка и сборка (`.\gradlew.bat build`). |
-| [`.github/workflows/release-jar.yml`](.github/workflows/release-jar.yml) | **Опционально:** при push тега `v*.*.*` (и включённых Actions) создаётся GitHub Release с **`1C_mcp_bsl.jar`**. Без тегов раздел Releases может быть пустым. |
+| [`.github/workflows/release-jar.yml`](.github/workflows/release-jar.yml) | При push тега `v*.*.*` (и включённых Actions) публикуется **[GitHub Release](https://github.com/Adam-Rubinstein/1C_mcp_bsl/releases)** с **`1C_mcp_bsl.jar`**. |
 | [`.github/workflows/platform-ci.yml`](.github/workflows/platform-ci.yml) | CI: сборка, тесты (при наличии секретов 1С), Docker (dry-run), анализ зависимостей. |
 | [`.github/workflows/platform-release.yml`](.github/workflows/platform-release.yml) | Вручную: полный конвейер с платформой 1С и publish в GitHub Packages. |
 
@@ -168,7 +168,7 @@ git branch -M main
 git push -u origin main
 ```
 
-**GitHub Release:** при включённых **Actions** и теге **`v*.*.*`** (первый релиз — **`v1.0.0`**) срабатывает **`release-jar.yml`**: в **Releases** появляется **`1C_mcp_bsl.jar`**. Если Actions недоступны или релиз не нужен — тот же JAR лежит в **`dist/1C_mcp_bsl.jar`** в репозитории.
+**GitHub Release:** при включённых **Actions** и push тега **`v*.*.*`** срабатывает **`release-jar.yml`** — см. **[Releases](https://github.com/Adam-Rubinstein/1C_mcp_bsl/releases)** (текущий стабильный пример: **[v1.0.0](https://github.com/Adam-Rubinstein/1C_mcp_bsl/releases/tag/v1.0.0)** с вложением **`1C_mcp_bsl.jar`**). Альтернатива без Releases — **`dist/1C_mcp_bsl.jar`** в репозитории после клона.
 
 **CI (`platform-ci.yml`):** job **`test`** (интеграция с установкой платформы 1С в CI) выполняется только при заданных секретах **`ONEC_USERNAME`** и **`ONEC_PASSWORD`**. Без них job **пропускается**; остальное (сборка JAR, проверки, Docker без push и т.д.) по-прежнему выполняется.
 
