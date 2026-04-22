@@ -1,7 +1,7 @@
 name: Release & Publish (полный конвейер)
 
 # Ручной запуск: тесты с установленной платформой 1С и publish в GitHub Packages.
-# Публикация JAR в GitHub Release по тегу — см. release-jar.yml (без секретов 1С).
+# (GitHub Release с JAR — см. release-jar.yml при push тега v*.*.*.)
 on:
   workflow_dispatch:
 

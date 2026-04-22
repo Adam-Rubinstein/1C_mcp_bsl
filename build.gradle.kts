@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "io.github.adamrubinstein"
-version = "0.3.2-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 gitVersioning.apply {
     refs {
