@@ -1,0 +1,4 @@
+﻿# Снижаем шум индексации Cursor (Gradle/сборка)
+.gradle/
+build/
+.kotlin/

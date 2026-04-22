@@ -1,0 +1,64 @@
+# Локальный MCP (пути к Java / JAR / платформе)
+.cursor/mcp.json
+
+# Прочее локальное
+tmp_remove_lines.ps1
+
+# Код и выгрузки ERP в этот репозиторий не входят — только материалы MCP/Cursor
+base-conf/
+ext-ad/
+docs/
+docs-tech/
+ex-bit/
+old-working-extension/
+
+# Остальные правила Cursor — не часть MCP-гайда
+.cursor/rules/1c-platform-standards.mdc
+.cursor/rules/est-1c-comment-blocks.mdc
+.cursor/rules/tz-agreement-before-code.mdc
+
+# --- Kotlin / Gradle (MCP-сервер в корне репозитория) ---
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### IntelliJ IDEA ###
+.idea
+!.idea/codeStyles/*
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### NetBeans (корневой dist/ с JAR не игнорируем — см. README) ###
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+*.log
+*.gz
+*.tmp
+/.kotlin

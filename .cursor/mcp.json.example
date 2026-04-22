@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "1c-platform": {
+      "type": "stdio",
+      "command": "REPLACE_WITH_FULL_PATH_TO_JAVA_EXE_OR_java",
+      "args": [
+        "-Dfile.encoding=UTF-8",
+        "-jar",
+        "REPLACE_WITH_FULL_PATH_TO_JAR",
+        "--platform-path",
+        "REPLACE_WITH_1C_PLATFORM_DIRECTORY"
+      ]
+    }
+  }
+}
