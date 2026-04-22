@@ -51,6 +51,37 @@
 
 Локальный файл **`.cursor/mcp.json`** создаётся у себя на машине (копия из примера с подставленными путями) и **не коммитится**.
 
+### Скрипты `install-mcp` (авто `mcp.json` + копирование правил)
+
+| Файл | Назначение |
+|------|------------|
+| [`scripts/install-mcp.ps1`](scripts/install-mcp.ps1) | **Windows (PowerShell):** поиск `java`, JAR из `dist/` или скачивание с **последнего Release** того же `owner/repo`, что в `-GitHubUrl`; поиск платформы 1С под `Program Files\1cv8`; запись **`.cursor/mcp.json`** в **`-WorkspaceRoot`** (или в корень клона); копирование **`use-1c-platform-mcp.mdc`** и **`mcp.json.example`**. |
+| [`scripts/install-mcp.sh`](scripts/install-mcp.sh) | **Linux / macOS / Git Bash:** то же через переменные окружения (см. ниже). Выбирается рабочий **Python** (обход заглушки `python3` из **WindowsApps**). |
+| [`scripts/test/smoke-install-mcp.sh`](scripts/test/smoke-install-mcp.sh) | **Smoke / CI:** подставные пути без настоящей 1С и без скачивания JAR. |
+
+**PowerShell (основные параметры):**
+
+| Параметр | Описание |
+|----------|----------|
+| `-GitHubUrl` | Клон репозитория в `%LOCALAPPDATA%\1C_mcp_bsl\checkout\Владелец_Репо` (нужен `git`). |
+| `-WorkspaceRoot` | Куда писать `.cursor/` (по умолчанию при `-GitHubUrl` — текущий каталог). |
+| `-SourceRepoRoot` | Откуда брать `dist/` и шаблоны (если уже есть клон). |
+| `-OverrideJarPath` / `-OverridePlatformPath` | Тесты и нестандартные установки (без скачивания JAR / без поиска 1С). |
+| `-DryRun` | Только вывод путей; **JAR с GitHub не скачивается**. |
+
+**Bash (переменные окружения):**
+
+| Переменная | Описание |
+|------------|----------|
+| `INSTALL_MCP_GITHUB_URL` | URL или `владелец/репо` — клон в кэш, как в PowerShell. |
+| `INSTALL_MCP_WORKSPACE_ROOT` | Корень целевого проекта (абсолютный путь). |
+| `INSTALL_MCP_SOURCE_ROOT` | Корень репозитория-источника (если уже клонирован). |
+| `INSTALL_MCP_JAR_PATH` / `INSTALL_MCP_PLATFORM_PATH` | Переопределение JAR и `--platform-path` (тесты, CI). |
+| `INSTALL_MCP_PYTHON` | Явный путь к `python.exe`, если не подходит `python3`/`python`. |
+| `INSTALL_MCP_DRY_RUN` | `1` — не писать файлы (кроме проверок в начале). |
+
+**Тесты в репозитории:** контракт разбора URL и формы `mcp.json` — JUnit, пакет `io.github.adamrubinstein.mcpbsl.install` (`./gradlew test --tests 'io.github.adamrubinstein.mcpbsl.install.*'`). Скриптовый smoke — **`scripts/test/smoke-install-mcp.sh`**. В **GitHub Actions** (`build-artifact` в **`platform-ci.yml`**) оба шага выполняются до сборки JAR.
+
 ### Как встроить в свой проект с кодом 1С
 
 1. Склонируйте этот репозиторий **или** скопируйте из него в свой проект файлы: `.cursor/mcp.json.example`, `.cursor/rules/use-1c-platform-mcp.mdc`.

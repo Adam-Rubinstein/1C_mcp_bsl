@@ -9,12 +9,15 @@
   2) -WorkspaceRoot "C:\проект\ERP" — пишет в открытый проект; источник — клон рядом со скриптом.
   3) -GitHubUrl "https://github.com/Owner/Repo" [-WorkspaceRoot ...] — клон в %LOCALAPPDATA%\1C_mcp_bsl\checkout,
      затем как (2); WorkspaceRoot по умолчанию — текущий каталог (Get-Location).
+  -OverrideJarPath / -OverridePlatformPath — для тестов и нестандартных путей (без скачивания JAR / без поиска 1С в Program Files).
   После успеха копирует use-1c-platform-mcp.mdc и mcp.json.example в WorkspaceRoot\.cursor\
 #>
 param(
     [string] $WorkspaceRoot = "",
     [string] $SourceRepoRoot = "",
     [string] $GitHubUrl = "",
+    [string] $OverrideJarPath = "",
+    [string] $OverridePlatformPath = "",
     [switch] $DryRun
 )
 
@@ -176,24 +179,37 @@ if (-not $javaCmd) {
     Write-Error "Не найден java. Установите JDK 17+ и PATH или JAVA_HOME."
 }
 
-$jarInRepo = Join-Path $SourceRepoRoot "dist\1C_mcp_bsl.jar"
 $jarPath = $null
-if (Test-Path -LiteralPath $jarInRepo) {
-    $jarPath = (Resolve-Path $jarInRepo).Path
+if ($OverrideJarPath) {
+    if (-not (Test-Path -LiteralPath $OverrideJarPath)) { Write-Error "Не найден JAR по OverrideJarPath: $OverrideJarPath" }
+    $jarPath = (Resolve-Path -LiteralPath $OverrideJarPath).Path
 } else {
-    $cacheDir = Join-Path $env:LOCALAPPDATA "1C_mcp_bsl"
-    New-Item -ItemType Directory -Force -Path $cacheDir | Out-Null
-    $jarPath = Join-Path $cacheDir "1C_mcp_bsl.jar"
-    if (-not $DryRun) {
-        $url = Get-ReleaseJarUrl -Owner $jarOwner -Repo $jarRepo
-        Write-Host "Скачивание JAR в $jarPath ..."
-        Invoke-WebRequest -Uri $url -OutFile $jarPath -UseBasicParsing
+    $jarInRepo = Join-Path $SourceRepoRoot "dist\1C_mcp_bsl.jar"
+    if (Test-Path -LiteralPath $jarInRepo) {
+        $jarPath = (Resolve-Path $jarInRepo).Path
+    } else {
+        $cacheDir = Join-Path $env:LOCALAPPDATA "1C_mcp_bsl"
+        New-Item -ItemType Directory -Force -Path $cacheDir | Out-Null
+        $jarPath = Join-Path $cacheDir "1C_mcp_bsl.jar"
+        if ($DryRun) {
+            Write-Host "[DryRun] JAR не скачивается; условный путь: $jarPath"
+        } else {
+            $url = Get-ReleaseJarUrl -Owner $jarOwner -Repo $jarRepo
+            Write-Host "Скачивание JAR в $jarPath ..."
+            Invoke-WebRequest -Uri $url -OutFile $jarPath -UseBasicParsing
+        }
     }
 }
 
-$platformPath = Find-1CPlatformPath
+$platformPath = $null
+if ($OverridePlatformPath) {
+    if (-not (Test-Path -LiteralPath $OverridePlatformPath)) { Write-Error "Не найден каталог платформы: $OverridePlatformPath" }
+    $platformPath = (Resolve-Path -LiteralPath $OverridePlatformPath).Path
+} else {
+    $platformPath = Find-1CPlatformPath
+}
 if (-not $platformPath) {
-    Write-Error "Не найдена установка 1С:Предприятие 8.3 (каталоги с bin под Program Files\1cv8). См. documentation/INSTALL.md."
+    Write-Error "Не найдена установка 1С:Предприятие 8.3 (каталоги с bin под Program Files\1cv8). Укажите -OverridePlatformPath или см. documentation/INSTALL.md."
 }
 
 $obj = [ordered]@{

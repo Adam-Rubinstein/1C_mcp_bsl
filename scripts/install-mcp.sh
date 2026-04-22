@@ -11,8 +11,42 @@
 #
 # Или только клон у себя, затем:
 #   INSTALL_MCP_WORKSPACE_ROOT=/path/to/erp bash scripts/install-mcp.sh
+#
+# Переопределения (тесты / CI): INSTALL_MCP_JAR_PATH, INSTALL_MCP_PLATFORM_PATH — пропускают
+# поиск dist/ и каталогов /opt/1cv8.
 
 set -euo pipefail
+
+# Рабочий Python (на Windows python3 из WindowsApps может быть заглушкой).
+pick_python() {
+  local try exe
+  if [[ -n "${INSTALL_MCP_PYTHON:-}" ]]; then
+    if [[ -x "$INSTALL_MCP_PYTHON" ]] && "$INSTALL_MCP_PYTHON" -c "import json" 2>/dev/null; then
+      echo "$INSTALL_MCP_PYTHON"
+      return 0
+    fi
+  fi
+  for try in python3 python; do
+    w="$(command -v "$try" 2>/dev/null)" || continue
+    [[ "$w" == *WindowsApps* ]] && continue
+    if "$try" -c "import json" 2>/dev/null; then
+      exe="$("$try" -c "import sys; print(sys.executable)" 2>/dev/null)" || exe=""
+      exe="${exe//$'\r'/}"
+      exe="${exe%%$'\n'*}"
+      [[ "$exe" == *" "* ]] && continue
+      [[ "$exe" == *WindowsApps* ]] && continue
+      [[ "$exe" == Downloading* ]] && continue
+      echo "$try"
+      return 0
+    fi
+  done
+  if command -v py >/dev/null 2>&1; then
+    exe="$(py -3 -c "import sys; print(sys.executable)" 2>/dev/null)" || exe=""
+    if [[ -n "$exe" && -x "$exe" ]]; then echo "$exe"; return 0; fi
+  fi
+  return 1
+}
+MCP_PY="$(pick_python)" || { echo "Нужен Python 3 с модулем json (python3, python, py -3 или INSTALL_MCP_PYTHON)." >&2; exit 1; }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEFAULT_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -102,7 +136,9 @@ if [[ -z "${JAVA_CMD:-}" ]]; then
 fi
 
 JAR_IN_REPO="$SOURCE_ROOT/dist/1C_mcp_bsl.jar"
-if [[ -f "$JAR_IN_REPO" ]]; then
+if [[ -n "${INSTALL_MCP_JAR_PATH:-}" ]]; then
+  JAR_PATH="$(cd "$(dirname "$INSTALL_MCP_JAR_PATH")" && pwd)/$(basename "$INSTALL_MCP_JAR_PATH")"
+elif [[ -f "$JAR_IN_REPO" ]]; then
   JAR_PATH="$(cd "$(dirname "$JAR_IN_REPO")" && pwd)/$(basename "$JAR_IN_REPO")"
 else
   case "$(uname -s)" in
@@ -115,7 +151,7 @@ else
   if [[ "$DRY" != "1" ]]; then
     URL="$(curl -fsSL -H "User-Agent: 1C_mcp_bsl-install" \
       "https://api.github.com/repos/${JAR_OWNER}/${JAR_REPO}/releases/latest" \
-      | python3 -c "import sys,json; r=json.load(sys.stdin); a=[x for x in r.get('assets',[]) if x.get('name')=='1C_mcp_bsl.jar']; print(a[0]['browser_download_url'] if a else '')")"
+      | "$MCP_PY" -c "import sys,json; r=json.load(sys.stdin); a=[x for x in r.get('assets',[]) if x.get('name')=='1C_mcp_bsl.jar']; print(a[0]['browser_download_url'] if a else '')")"
     [[ -n "$URL" ]] || { echo "Нет JAR в releases $JAR_OWNER/$JAR_REPO" >&2; exit 1; }
     echo "Скачивание JAR..."
     curl -fSL "$URL" -o "$JAR_PATH"
@@ -123,18 +159,22 @@ else
 fi
 
 PLATFORM_PATH=""
-shopt -s nullglob
-candidates=()
-for base in /opt/1cv8/x86_64 /opt/1cv8/aarch64; do
-  [[ -d "$base" ]] || continue
-  for d in "$base"/8.3.*/; do
-    [[ -d "${d}bin" ]] || continue
-    candidates+=("$(cd "$d" && pwd)")
+if [[ -n "${INSTALL_MCP_PLATFORM_PATH:-}" ]]; then
+  PLATFORM_PATH="$(cd "$INSTALL_MCP_PLATFORM_PATH" && pwd)"
+else
+  shopt -s nullglob
+  candidates=()
+  for base in /opt/1cv8/x86_64 /opt/1cv8/aarch64; do
+    [[ -d "$base" ]] || continue
+    for d in "$base"/8.3.*/; do
+      [[ -d "${d}bin" ]] || continue
+      candidates+=("$(cd "$d" && pwd)")
+    done
   done
-done
-shopt -u nullglob
-if ((${#candidates[@]})); then
-  PLATFORM_PATH="$(printf '%s\n' "${candidates[@]}" | sort -V | tail -1)"
+  shopt -u nullglob
+  if ((${#candidates[@]})); then
+    PLATFORM_PATH="$(printf '%s\n' "${candidates[@]}" | sort -V | tail -1)"
+  fi
 fi
 if [[ -z "$PLATFORM_PATH" ]]; then
   echo "Не найдена платформа 1С под /opt/1cv8/..." >&2
@@ -147,7 +187,7 @@ export INSTALL_MCP_JAVA="$JAVA_CMD"
 export INSTALL_MCP_JAR="$JAR_PATH"
 export INSTALL_MCP_PLATFORM="$PLATFORM_PATH"
 if [[ "$DRY" != "1" ]]; then
-python3 <<'PY'
+"$MCP_PY" <<'PY'
 import json
 import os
 from pathlib import Path

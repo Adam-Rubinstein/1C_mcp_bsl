@@ -19,6 +19,10 @@ $f = Join-Path $env:TEMP "install-mcp-1c.ps1"; irm "https://raw.githubuserconten
 
 Скрипт создаёт **`.cursor/mcp.json`**, копирует **`use-1c-platform-mcp.mdc`** и **`mcp.json.example`**. Дальше: **Reload Window**. Если автообнаружение 1С не сработало — разделы ниже и ручное заполнение по **`mcp.json.example`**.
 
+**Переменные для `install-mcp.sh`:** `INSTALL_MCP_GITHUB_URL`, `INSTALL_MCP_WORKSPACE_ROOT`, `INSTALL_MCP_SOURCE_ROOT`, **`INSTALL_MCP_JAR_PATH`**, **`INSTALL_MCP_PLATFORM_PATH`** (последние два — для CI и нестандартных путей), **`INSTALL_MCP_PYTHON`** — явный интерпретатор, если `python3` в PATH оказался заглушкой (Windows Store). Полный список параметров PowerShell и переменных — в **[корневом README](../README.md)** (раздел **«Скрипты install-mcp»**).
+
+**Проверки в репозитории:** JUnit `io.github.adamrubinstein.mcpbsl.install.*`, smoke **`bash scripts/test/smoke-install-mcp.sh`** (из корня клона).
+
 ## 1. Требования
 
 | Компонент | Минимум |

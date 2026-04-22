@@ -25,6 +25,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: JUnit — контракт установки MCP (install/*)
+        run: ./gradlew test --no-daemon --tests 'io.github.adamrubinstein.mcpbsl.install.*'
+
+      - name: Smoke install-mcp.sh (подставные JAR и platform-path)
+        run: chmod +x scripts/install-mcp.sh scripts/test/smoke-install-mcp.sh && bash scripts/test/smoke-install-mcp.sh
+
       - name: Build JAR
         run: ./gradlew bootJar --no-daemon
 
