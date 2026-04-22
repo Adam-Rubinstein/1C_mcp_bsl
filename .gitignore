@@ -1,22 +1,6 @@
 # Локальный MCP (пути к Java / JAR / платформе)
 .cursor/mcp.json
 
-# Прочее локальное
-tmp_remove_lines.ps1
-
-# Код и выгрузки ERP в этот репозиторий не входят — только материалы MCP/Cursor
-base-conf/
-ext-ad/
-docs/
-docs-tech/
-ex-bit/
-old-working-extension/
-
-# Остальные правила Cursor — не часть MCP-гайда
-.cursor/rules/1c-platform-standards.mdc
-.cursor/rules/est-1c-comment-blocks.mdc
-.cursor/rules/tz-agreement-before-code.mdc
-
 # --- Kotlin / Gradle (MCP-сервер в корне репозитория) ---
 .gradle/
 build/
