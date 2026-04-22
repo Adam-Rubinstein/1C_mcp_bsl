@@ -37,10 +37,9 @@ jobs:
           name: 1C_mcp_bsl_jar
           path: 1C_mcp_bsl.jar
 
-  # Интеграционные тесты нужны установленная платформа 1С и секреты ONEC_* в настройках репозитория.
-  # Без секретов job пропускается — остальные jobs (сборка JAR, ktlint и т.д.) по-прежнему выполняются.
+  # Интеграционные тесты: платформа 1С и секреты ONEC_* в настройках репозитория.
+  # В job-level `if` нельзя использовать `secrets` (ошибка валидации workflow). Условие — на шагах ниже.
   test:
-    if: ${{ secrets.ONEC_USERNAME != '' && secrets.ONEC_PASSWORD != '' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -56,7 +55,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Без секретов ONEC_* — интеграционные шаги пропущены
+        if: ${{ secrets.ONEC_USERNAME == '' || secrets.ONEC_PASSWORD == '' }}
+        run: |
+          echo "Добавьте в репозиторий секреты ONEC_USERNAME и ONEC_PASSWORD, чтобы выполнялись шаги с платформой 1С и ./gradlew test."
+          exit 0
+
       - name: Установка 1С:Предприятие
+        if: ${{ secrets.ONEC_USERNAME != '' && secrets.ONEC_PASSWORD != '' }}
         uses: 1CDevFlow/onec-setup-action@main
         with:
           type: onec
@@ -68,40 +74,46 @@ jobs:
         timeout-minutes: 10
 
       - name: PLATFORM_PATH для тестов (совпадает с onec-setup)
+        if: ${{ secrets.ONEC_USERNAME != '' && secrets.ONEC_PASSWORD != '' }}
         run: |
           grep -q '^PLATFORM_PATH=' gradle.properties && sed -i 's|^PLATFORM_PATH=.*|PLATFORM_PATH=/opt/1cv8/x86_64/8.3.27.1508|' gradle.properties \
             || echo 'PLATFORM_PATH=/opt/1cv8/x86_64/8.3.27.1508' >> gradle.properties
 
       - name: Set up JDK ${{ matrix.java-version }}
+        if: ${{ secrets.ONEC_USERNAME != '' && secrets.ONEC_PASSWORD != '' }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java-version }}
           distribution: 'temurin'
 
       - name: Setup Gradle
+        if: ${{ secrets.ONEC_USERNAME != '' && secrets.ONEC_PASSWORD != '' }}
         uses: gradle/actions/setup-gradle@v3
         with:
           cache-read-only: false
 
       - name: Grant execute permission for gradlew
+        if: ${{ secrets.ONEC_USERNAME != '' && secrets.ONEC_PASSWORD != '' }}
         run: chmod +x gradlew
 
       - name: Run tests with coverage
+        if: ${{ secrets.ONEC_USERNAME != '' && secrets.ONEC_PASSWORD != '' }}
         run: ./gradlew test jacocoTestReport --no-daemon
 
       - name: Check code style
+        if: ${{ secrets.ONEC_USERNAME != '' && secrets.ONEC_PASSWORD != '' }}
         run: ./gradlew ktlintCheck --no-daemon
         continue-on-error: true
 
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+        if: ${{ always() && secrets.ONEC_USERNAME != '' && secrets.ONEC_PASSWORD != '' }}
         with:
           files: |
             build/test-results/**/*.xml
 
       - name: Add coverage to PR
-        if: github.event_name == 'pull_request'
+        if: ${{ github.event_name == 'pull_request' && secrets.ONEC_USERNAME != '' && secrets.ONEC_PASSWORD != '' }}
         uses: madrapps/jacoco-report@v1.6.1
         with:
           paths: ${{ github.workspace }}/build/reports/jacoco/test/jacocoTestReport.xml
@@ -110,7 +122,7 @@ jobs:
           min-coverage-changed-files: 60
 
       - name: Upload coverage reports to Codecov
-        if: matrix.java-version == '17'
+        if: ${{ matrix.java-version == '17' && secrets.ONEC_USERNAME != '' && secrets.ONEC_PASSWORD != '' }}
         uses: codecov/codecov-action@v3
         with:
           file: ./build/reports/jacoco/test/jacocoTestReport.xml
