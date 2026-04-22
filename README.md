@@ -170,7 +170,7 @@ git push -u origin main
 
 **GitHub Release:** при включённых **Actions** и push тега **`v*.*.*`** срабатывает **`release-jar.yml`** — см. **[Releases](https://github.com/Adam-Rubinstein/1C_mcp_bsl/releases)** (текущий стабильный пример: **[v1.0.0](https://github.com/Adam-Rubinstein/1C_mcp_bsl/releases/tag/v1.0.0)** с вложением **`1C_mcp_bsl.jar`**). Альтернатива без Releases — **`dist/1C_mcp_bsl.jar`** в репозитории после клона.
 
-**CI (`platform-ci.yml`):** job **`test`** (интеграция с установкой платформы 1С в CI) выполняется только при заданных секретах **`ONEC_USERNAME`** и **`ONEC_PASSWORD`**. Без них job **пропускается**; остальное (сборка JAR, проверки, Docker без push и т.д.) по-прежнему выполняется.
+**CI (`platform-ci.yml`):** job **`test`** всегда стартует; шаги с установкой платформы 1С и **`./gradlew test`** выполняются только при секретах **`ONEC_USERNAME`** и **`ONEC_PASSWORD`**. Без них выводится поясняющий шаг, остальные jobs (сборка JAR, Docker dry-run и т.д.) не затрагиются.
 
 ### Настройки Cursor
 
